@@ -68,6 +68,9 @@ int main(int argc, const char* argv[]) {
 		while (true) {
 			agent& who = game.take_turns(play, evil);
 			action move = who.take_action(game.state());
+			//std::cout<<"-----"<<std::endl;
+			//std::cout<<move<<std::endl;
+			//std::cout<<game.state()<<std::endl;
 			if (game.apply_action(move) != true) break;
 			if (who.check_for_win(game.state())) break;
 		}

@@ -13,6 +13,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <cmath>
+#include <vector>
 
 /**
  * array-based board for 2584
@@ -24,6 +25,7 @@
  * (12) (13) (14) (15)
  *
  */
+
 class board {
 public:
 	typedef uint32_t cell;
@@ -93,15 +95,22 @@ public:
 				int tile = row[c];
 				if (tile == 0) continue;
 				row[c] = 0;
+				//不是第一排
 				if (hold) {
-					if (tile == hold) {
-						row[top++] = ++tile;
+					//可以合成
+					if (abs(tile-hold) == 1 or (tile == 1 and hold ==1)) {
+						int newTile = tile>hold?++tile:++hold;
+						row[top++] = newTile;
 						score += (1 << tile);
 						hold = 0;
+					//不能合成
 					} else {
+						//恢復tile值
 						row[top++] = hold;
+						// hold重新計
 						hold = tile;
-					}
+					} 
+				//是第一排	
 				} else {
 					hold = tile;
 				}
@@ -170,10 +179,12 @@ public:
 
 public:
 	friend std::ostream& operator <<(std::ostream& out, const board& b) {
+		std::vector<int> table{0, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025};
+
 		out << "+------------------------+" << std::endl;
 		for (auto& row : b.tile) {
 			out << "|" << std::dec;
-			for (auto t : row) out << std::setw(6) << ((1 << t) & -2u);
+			for (auto t : row) out << std::setw(6) << table[t];
 			out << "|" << std::endl;
 		}
 		out << "+------------------------+" << std::endl;
@@ -189,6 +200,7 @@ public:
 	}
 
 private:
+
 	grid tile;
 	data attr;
 };
