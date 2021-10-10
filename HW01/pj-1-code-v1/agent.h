@@ -99,15 +99,42 @@ private:
 class player : public random_agent {
 public:
 	player(const std::string& args = "") : random_agent("name=dummy role=player " + args),
-		opcode({ 0, 1, 2, 3 }) {}
+		opcode({ 3, 0, 2, 1}) {}
 
 	virtual action take_action(const board& before) {
-		std::shuffle(opcode.begin(), opcode.end(), engine);
+
+		//std::shuffle(opcode.begin(), opcode.end(), engine);
+		int max = -1 ;
+		int bestOp = -1;
+        
+		bool openLevel = false;
+		for(int i =0;i<15;i++){
+			if(before.operator()(i)>=20)
+			{
+				openLevel = true;
+			}
+		}
+		if(openLevel and before.operator()(0)!=0 and before.operator()(4)!=0 and before.operator()(8)!=0 and before.operator()(12)!=0){
+			board::reward reward = board(before).slide(1);
+			if (reward != -1) return action::slide(1);
+		}
+		
+		
+		//std::cout<<before.operator()(0)<<std::endl;
+
+		//std::cout<<"----"<<std::endl;
 		for (int op : opcode) {
 			board::reward reward = board(before).slide(op);
-			if (reward != -1) return action::slide(op);
+			//if (op == 3 and reward != -1) return action::slide(op);
+			//if(reward == -1)continue;
+			//else bestOp = op;
+			//break;
+		    //std::cout<<reward<<std::endl;
+			//if(reward > max){ max = reward; bestOp = op;}
+		    if (reward != -1) return action::slide(op);
 		}
-		return action();
+		return action::slide(bestOp);
+		//return action();
 	}
 
 private:
